@@ -25,7 +25,7 @@ const app = express();
 const port = process.env.PORT || 4000;
 connectDB();
 
-const allowedOrigins = ['http://localhost:5173']; // React frontend app
+const allowedOrigins = ['https://ink-swift-client.vercel.app/']; // React frontend app
   
 
 // Middleware
@@ -50,7 +50,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/user', userRouter);
 app.use('/api/audit', auditRoute);
 
-app.listen(port, ()=> console.log(`Server started on PORT: ${port}`));
+app.listen(port, '0.0.0.0', () => console.log(`Server started on PORT: ${port}`));
 
 
 
