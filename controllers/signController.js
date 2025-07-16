@@ -13,29 +13,31 @@ import userModel from "../models/userModel.js";
 
 
 export const saveSignature = async (req, res) => {
-    try {
-        const { fileId, x, y, page } = req.body;
+  try {
+    const { fileId, x, y, page, name } = req.body;
 
-        if (!fileId || x == null || y == null || page == null) {
-            return res.status(400).json({ success: false, message: "Missing required fields" });
-        }
-
-        const signature = await signModel.create({
-            fileId,
-            x,
-            y,
-            page,
-            signer: req.userId,
-            status: 'Signed',
-        });
-
-        res.json({ success: true, message: "Signature saved", signature });
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+    if (!fileId || x == null || y == null || page == null || !name?.trim()) {
+      return res.status(400).json({ success: false, message: "Missing required fields" });
     }
+
+    const signature = await signModel.create({
+      fileId,
+      x,
+      y,
+      page,
+      name,
+      signer: req.userId,
+      status: 'Signed',
+    });
+
+    res.json({ success: true, message: "Signature saved", signature });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 };
 
 
+<<<<<<< HEAD
 // export const generateSignedPDF = async (req, res) => {
 //     try {
 //         const { fileId } = req.body;
@@ -94,45 +96,55 @@ export const saveSignature = async (req, res) => {
 // };
 
 // In your signController.js
+=======
+
+>>>>>>> a4cab78 (Updated)
 export const generateSignedPDF = async (req, res) => {
   try {
     const { fileId } = req.body;
 
-    // 1. Get document and verify
     const document = await documentModel.findById(fileId);
     if (!document) {
       return res.status(404).json({ success: false, message: "Document not found" });
     }
 
-    // 2. Load PDF document
     const pdfBytes = fs.readFileSync(path.resolve(document.filePath));
     const pdfDoc = await PDFDocument.load(pdfBytes);
     const pages = pdfDoc.getPages();
     const font = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
-    // 3. Get and validate signatures
-    const signatures = await signModel.find({ fileId, status: "Signed" })
-      .populate("signer", "name");
 
-    // 4. Add signatures with validation
-    signatures.forEach(sig => {
-      const pageIndex = Math.min(sig.page || 0, pages.length - 1);
-      const page = pages[pageIndex];
-      const { width, height } = page.getSize();
 
-      const safeX = Math.max(0, Math.min(sig.x, width - 50));
-      const safeY = Math.max(0, Math.min(sig.y, height - 20));
+const signatures = await signModel.find({ fileId, status: "Signed" });
 
-      page.drawText(sig.signer?.name || "Signature", {
-        x: safeX,
-        y: safeY,
-        size: 14,
-        font,
-        color: rgb(0, 0, 0)
-      });
-    });
+signatures.forEach(sig => {
+  const pageIndex = Math.min(sig.page || 0, pages.length - 1);
+  const page = pages[pageIndex];
+  const { width, height } = page.getSize();
 
-    // 5. Generate and send PDF
+  const signatureWidth = 120; // Match what you use in frontend (Resizable)
+  const signatureHeight = 50;
+
+  
+  const safeX = Math.max(0, Math.min(sig.x, width - signatureWidth));
+
+  const flippedY = height - sig.y - signatureHeight;
+  const safeY = Math.max(0, Math.min(flippedY, height - signatureHeight));
+
+
+  const nameToDraw = sig.name || "Signature";
+
+  page.drawText(nameToDraw, {
+    x: safeX,
+    y: safeY,
+    size: 14,
+    font,
+    color: rgb(0, 0, 0)
+  });
+
+
+});
+
     const signedPdfBytes = await pdfDoc.save();
     res.set({
       'Content-Type': 'application/pdf',
@@ -151,6 +163,8 @@ export const generateSignedPDF = async (req, res) => {
   }
 };
 
+
+
 export const sendSignatureLink = async (req, res) => {
     try {
         const { fileId, email } = req.body;
@@ -162,7 +176,8 @@ export const sendSignatureLink = async (req, res) => {
 
         const token = jwt.sign({ fileId, email }, process.env.JWT_SECRET, { expiresIn: "1d" });
 
-        const link = `http://localhost:5173/external-sign/${token}`; // adjust domain if deployed
+        const link = `https://ink-swift-client-5nbnif1mz-poulami-gandhis-projects.vercel.app/external-sign/${token}`;
+
 
 
         const transporter = nodemailer.createTransport({
@@ -211,6 +226,7 @@ export const verifySignatureToken = async (req, res) => {
     } catch (err) {
         res.status(400).json({ success: false, message: "Invalid or expired link" });
     }
+
 };
 
 
@@ -277,4 +293,33 @@ export const verifyDocumentSignatures = async (req, res) => {
             error: error.message
         });
     }
+};
+
+export const saveExternalSignature = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { x, y, page, name } = req.body;
+
+    if (!x || !y || page === undefined || !name) {
+      return res.status(400).json({ success: false, message: "Missing required fields" });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const { fileId, email } = decoded;
+
+    const signature = await signModel.create({
+      fileId,
+      x,
+      y,
+      page,
+      name,     
+      email,    // Optional: store email from token
+      status: "Signed"
+    });
+
+    res.json({ success: true, message: "External signature saved", signature });
+  } catch (err) {
+    console.error("External signature error:", err);
+    res.status(500).json({ success: false, message: err.message });
+  }
 };

@@ -25,7 +25,7 @@ const app = express();
 const port = process.env.PORT || 4000;
 connectDB();
 
-const allowedOrigins = ['https://ink-swift-client.vercel.app/']; // React frontend app
+const allowedOrigins = ['https://ink-swift-client-5nbnif1mz-poulami-gandhis-projects.vercel.app']; // React frontend app
   
 
 // Middleware

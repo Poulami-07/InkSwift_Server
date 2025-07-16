@@ -1,6 +1,9 @@
 //to create ner user and using this controller function(register,login, verify ac, pw reset etc) we will create the API end point
 
 //For user Registration
+//to create ner user and using this controller function(register,login, verify ac, pw reset etc) we will create the API end point
+
+//For user Registration
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken'; //generate token for authentication
 import userModel from '../models/userModel.js';

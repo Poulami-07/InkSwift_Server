@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 const signatureSchema = new mongoose.Schema({
   fileId: { type: mongoose.Schema.Types.ObjectId, ref: "document", required: true },
   signer: { type: mongoose.Schema.Types.ObjectId, ref: "user", required: true },
+  name: { type: String, required: true },
   x: { type: Number, required: true },
   y: { type: Number, required: true },
   page: { type: Number, required: true }, // which page of PDF
