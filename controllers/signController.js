@@ -37,68 +37,6 @@ export const saveSignature = async (req, res) => {
 };
 
 
-<<<<<<< HEAD
-// export const generateSignedPDF = async (req, res) => {
-//     try {
-//         const { fileId } = req.body;
-
-//         const document = await documentModel.findById(fileId);
-//         if (!document) {
-//             return res.status(404).json({ success: false, message: "Document not found" });
-//         }
-
-//         // Get only signed signatures
-//         const signatures = await signModel
-//             .find({ fileId, status: "Signed" })
-//             .populate("signer", "name");
-
-//         if (!signatures.length) {
-//             return res.status(400).json({ success: false, message: "No signed signatures found" });
-//         }
-
-//         const existingPdfBytes = fs.readFileSync(path.resolve(document.filePath));
-//         const pdfDoc = await PDFDocument.load(existingPdfBytes);
-//         const font = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
-//         const pages = pdfDoc.getPages();
-
-//         signatures.forEach((sig) => {
-//             const pageIndex = sig.page ?? 0;
-//             if (pageIndex >= pages.length || pageIndex < 0) return;
-
-//             pages[pageIndex].drawText(sig.signer.name || "Signature", {
-//                 x: sig.x,
-//                 y: sig.y,
-//                 size: 14,
-//                 font,
-//                 color: rgb(0, 0, 0),
-//             });
-//         });
-
-//         // In your generateSignedPDF controller
-//         const signedBytes = await pdfDoc.save();
-//         if (!signedBytes || signedBytes.length === 0) {
-//             return res.status(500).json({ success: false, message: "Failed to generate PDF" });
-//         }
-//         const signedFileName = `signed-${Date.now()}-${path.basename(document.filePath)}`;
-//         const signedFilePath = path.join("uploads", signedFileName);
-
-//         fs.writeFileSync(signedFilePath, signedBytes);
-
-//         res.json({
-//             success: true,
-//             message: "Signed PDF generated",
-//             signedFilePath,
-//         });
-//     } catch (error) {
-//         console.error("Signed PDF error:", error);
-//         res.status(500).json({ success: false, message: "Server error" });
-//     }
-// };
-
-// In your signController.js
-=======
-
->>>>>>> a4cab78 (Updated)
 export const generateSignedPDF = async (req, res) => {
   try {
     const { fileId } = req.body;
