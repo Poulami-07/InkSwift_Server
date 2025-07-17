@@ -114,7 +114,7 @@ export const sendSignatureLink = async (req, res) => {
 
         const token = jwt.sign({ fileId, email }, process.env.JWT_SECRET, { expiresIn: "1d" });
 
-        const link = `https://ink-swift-client-5nbnif1mz-poulami-gandhis-projects.vercel.app/external-sign/${token}`;
+        const link = `https://ink-swift-client.vercel.app/external-sign/${token}`;
 
 
 
