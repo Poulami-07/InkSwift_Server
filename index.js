@@ -27,7 +27,7 @@ connectDB();
 
 const allowedOrigins = [
   "https://ink-swift-client-3xlrb8958-poulami-gandhis-projects.vercel.app",
-  "https://ink-swift-client.vercel.app/",
+  "https://ink-swift-client.vercel.app",
   "http://localhost:5173"  
 ];
 
@@ -47,9 +47,6 @@ app.use(cors({
 
 // Middleware
 app.use(express.json());
-// app.use(cors({
-//   origin: allowedOrigins, 
-//   credentials: true}));
 app.use(cookieParser());
 
 app.use('/api/docs', docRoute);
